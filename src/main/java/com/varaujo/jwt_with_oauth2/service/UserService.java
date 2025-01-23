@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -41,5 +42,9 @@ public class UserService {
         user.setRoles(Set.of(basicRole));
 
         return userRepository.save(user);
+    }
+
+    public List<User> list() {
+        return userRepository.findAll();
     }
 }

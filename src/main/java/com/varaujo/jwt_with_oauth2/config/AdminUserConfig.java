@@ -29,14 +29,14 @@ public class AdminUserConfig implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
         Role roleAdmin = roleRepository.findByName(Role.Values.ADMIN.name());
-        Optional<User> userAdmin = userRepository.findByUsername("admin");
+        Optional<User> userAdmin = userRepository.findByUsername("ADMIN");
         userAdmin.ifPresentOrElse(
                 user -> {
                     System.out.println("admin already exists");
                 },
                 () -> {
                     User user = new User();
-                    user.setUsername("admin");
+                    user.setUsername("ADMIN");
                     user.setPassword(passwordEncoder.encode("123"));
                     user.setRoles(Set.of(roleAdmin));
                     userRepository.save(user);

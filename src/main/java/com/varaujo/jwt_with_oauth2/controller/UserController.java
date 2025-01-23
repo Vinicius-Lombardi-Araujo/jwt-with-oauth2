@@ -4,10 +4,10 @@ import com.varaujo.jwt_with_oauth2.dto.CreateUserDto;
 import com.varaujo.jwt_with_oauth2.entity.User;
 import com.varaujo.jwt_with_oauth2.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -24,4 +24,11 @@ public class UserController {
         userService.createUser(createUserDto);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    public ResponseEntity<List<User>> list() {
+        return ResponseEntity.ok(userService.list());
+    }
+
 }
