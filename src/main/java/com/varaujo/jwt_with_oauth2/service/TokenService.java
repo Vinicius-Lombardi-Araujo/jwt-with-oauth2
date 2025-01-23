@@ -1,6 +1,7 @@
 package com.varaujo.jwt_with_oauth2.service;
 
 import com.varaujo.jwt_with_oauth2.dto.LoginRequest;
+import com.varaujo.jwt_with_oauth2.entity.Role;
 import com.varaujo.jwt_with_oauth2.entity.User;
 import com.varaujo.jwt_with_oauth2.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TokenService {
@@ -49,11 +51,17 @@ public class TokenService {
     private String generateToken(User user) {
         Instant now = Instant.now();
 
+        String scope = user.getRoles()
+                .stream()
+                .map(Role::getName)
+                .collect(Collectors.joining(" "));
+
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(applicationName)
                 .subject(user.getUserId().toString())
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(tokenDuration))
+                .claim("scope", scope)
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
