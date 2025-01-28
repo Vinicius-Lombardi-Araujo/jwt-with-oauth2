@@ -1,6 +1,7 @@
 package com.varaujo.jwt_with_oauth2.service;
 
 import com.varaujo.jwt_with_oauth2.dto.CreateTweetDto;
+import com.varaujo.jwt_with_oauth2.entity.Role;
 import com.varaujo.jwt_with_oauth2.entity.Tweet;
 import com.varaujo.jwt_with_oauth2.entity.User;
 import com.varaujo.jwt_with_oauth2.repository.TweetRepository;
@@ -41,7 +42,13 @@ public class TweetService {
     public void delete(Long tweetId, JwtAuthenticationToken token) {
         Tweet tweet = tweetRepository.findById(tweetId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if(!tweet.getUser().getUserId().equals(UUID.fromString(token.getName()))) {
+
+        Optional<User> user = userRepository.findById(UUID.fromString(token.getName()));
+        Boolean isAdmin = user.get().getRoles()
+                .stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
+
+        if(!isAdmin && !tweet.getUser().getUserId().equals(UUID.fromString(token.getName()))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         tweetRepository.deleteById(tweetId);
