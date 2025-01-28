@@ -4,10 +4,7 @@ import com.varaujo.jwt_with_oauth2.dto.CreateTweetDto;
 import com.varaujo.jwt_with_oauth2.service.TweetService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/tweets")
@@ -24,4 +21,11 @@ public class TweetController {
         tweetService.create(createTweetDto, token);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long tweetId, JwtAuthenticationToken token) {
+        tweetService.delete(tweetId, token);
+        return ResponseEntity.ok().build();
+    }
+
 }

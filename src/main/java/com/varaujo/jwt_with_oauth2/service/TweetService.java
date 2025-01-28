@@ -5,8 +5,11 @@ import com.varaujo.jwt_with_oauth2.entity.Tweet;
 import com.varaujo.jwt_with_oauth2.entity.User;
 import com.varaujo.jwt_with_oauth2.repository.TweetRepository;
 import com.varaujo.jwt_with_oauth2.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -32,5 +35,15 @@ public class TweetService {
         tweetRepository.save(tweet);
 
         return tweetRepository.save(tweet);
+    }
+
+    @Transactional
+    public void delete(Long tweetId, JwtAuthenticationToken token) {
+        Tweet tweet = tweetRepository.findById(tweetId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if(!tweet.getUser().getUserId().equals(UUID.fromString(token.getName()))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        tweetRepository.deleteById(tweetId);
     }
 }
